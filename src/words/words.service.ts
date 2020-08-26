@@ -17,11 +17,11 @@ export class WordsService {
     return this.wordRepository.findOne(id);
   }
 
-  create(word: Omit<Word, 'id'>): Promise<InsertResult> {
+  create(word: Partial<Word>): Promise<InsertResult> {
     return this.wordRepository.insert(word);
   }
 
-  update(id: Word['id'], word: Omit<Word, 'id'>): Promise<UpdateResult> {
+  update(id: Word['id'], word: Partial<Word>): Promise<UpdateResult> {
     return this.wordRepository.update(id, word);
   }
 
