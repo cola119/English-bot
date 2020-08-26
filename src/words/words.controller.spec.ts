@@ -2,27 +2,37 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { WordsController } from './words.controller';
 import { WordsService } from './words.service';
 import { Word } from './entity/word.entity';
+import { Repository } from 'typeorm';
+import { getRepositoryToken } from '@nestjs/typeorm';
 
-const word1: Word = { str: 'word1' };
+const word1: Word = { id: 1, str: 'word1', meaning: 'meaning1' };
+
+const mockRepository: Partial<Repository<Word>> = {
+  find: async () => [word1],
+};
 
 describe('WordsController', () => {
   let controller: WordsController;
-  let service: WordsService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [WordsController],
-      providers: [WordsService],
+      providers: [
+        WordsService,
+        {
+          provide: getRepositoryToken(Word),
+          useValue: mockRepository,
+        },
+      ],
     }).compile();
 
     controller = module.get<WordsController>(WordsController);
-    service = module.get<WordsService>(WordsService);
   });
 
   describe('findAll', () => {
-    it('should return an array of words', () => {
-      jest.spyOn(service, 'findAll').mockImplementation(() => [word1]);
-      expect(controller.findAll()).toStrictEqual([word1]);
+    it('should return an array of words', async () => {
+      const result = await controller.findAll();
+      expect(result).toStrictEqual([word1]);
     });
   });
 });

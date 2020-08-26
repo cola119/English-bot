@@ -1,5 +1,13 @@
-// wip
+import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
-export type Word = {
+@Entity()
+export class Word {
+  @PrimaryGeneratedColumn()
+  id: number;
+
+  @Column()
   str: string;
-};
+
+  @Column()
+  meaning: string;
+}
