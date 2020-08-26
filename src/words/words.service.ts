@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Word } from './entity/word.entity';
-import { Repository, InsertResult } from 'typeorm';
+import { Repository, InsertResult, DeleteResult, UpdateResult } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
@@ -13,7 +13,19 @@ export class WordsService {
     return this.wordRepository.find();
   }
 
+  findById(id: Word['id']): Promise<Word | undefined> {
+    return this.wordRepository.findOne(id);
+  }
+
   create(word: Omit<Word, 'id'>): Promise<InsertResult> {
     return this.wordRepository.insert(word);
+  }
+
+  update(id: Word['id'], word: Omit<Word, 'id'>): Promise<UpdateResult> {
+    return this.wordRepository.update(id, word);
+  }
+
+  delete(id: Word['id']): Promise<DeleteResult> {
+    return this.wordRepository.delete(id);
   }
 }
