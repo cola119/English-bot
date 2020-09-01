@@ -4,7 +4,13 @@ import { Word } from './entity/word.entity';
 import { Repository } from 'typeorm';
 import { getRepositoryToken } from '@nestjs/typeorm';
 
-const word1: Word = { id: 1, str: 'word1', meaning: 'meaning1' };
+const word1: Word = {
+  id: 1,
+  str: 'word1',
+  meaning: 'meaning1',
+  createdAt: new Date(1),
+  updatedAt: new Date(1),
+};
 
 const mockRepository: Partial<Repository<Word>> = {
   find: async () => [word1],
