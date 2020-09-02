@@ -7,9 +7,8 @@ services:
     ports:
       - "3001:3000"
     volumes:
-      - type: bind
-        source: .
-        target: /api-server
+      - .:/api-server
+      - /api-server/node_modules
     depends_on:
       - db-server
 
