@@ -1,12 +1,13 @@
 import { Controller } from '@nestjs/common';
-import { MessagePattern, Payload } from '@nestjs/microservices';
+import { EventPattern, Payload } from '@nestjs/microservices';
 import { KafkaMessage } from '@nestjs/microservices/external/kafka-options.interface';
+
+const topic = 'get.message.event';
 
 @Controller('line')
 export class LineController {
-  @MessagePattern('get.new.message')
+  @EventPattern(topic)
   getMessage(@Payload() message: KafkaMessage): void {
-    console.log('got');
-    console.log(message);
+    console.log(message.value);
   }
 }

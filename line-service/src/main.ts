@@ -9,7 +9,10 @@ async function bootstrap() {
       transport: Transport.KAFKA,
       options: {
         client: {
-          brokers: ['192.168.3.7:32790', '192.168.3.7:32791'],
+          brokers: ['192.168.3.7:32770', '192.168.3.7:32768'],
+        },
+        consumer: {
+          groupId: 'line-consumer',
         },
       },
     },
