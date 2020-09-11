@@ -1,16 +1,26 @@
 version: "3.7"
 services:
-  api-server:
-    build: .
+  api-service:
+    build: ./api-service
     tty: true
     restart: always
     ports:
       - "3001:3000"
     volumes:
-      - .:/api-server
-      - /api-server/node_modules
+      - ./api-service:/api-service
+      - /api-service/node_modules
     depends_on:
       - db-server
+
+  line-service:
+    build: ./line-service
+    tty: true
+    restart: always
+    ports:
+      - 3002:3000
+    volumes:
+      - ./line-service:/line-service
+      - /line-service/node_modules
 
   db-server:
     container_name: db-server

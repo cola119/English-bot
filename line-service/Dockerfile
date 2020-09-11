@@ -5,8 +5,8 @@ RUN npm config set strict-ssl false
 
 RUN npm i -g @nestjs/cli
 
-WORKDIR /api-service
-COPY package*.json /api-service/
+WORKDIR /line-service
+COPY package*.json /line-service/
 
 RUN npm ci
 

@@ -3,12 +3,7 @@
 ### bootstrap
 
 ```sh
-cd api-service
 docker-compose up --build -d
-
-cd ..
-cd line-service
-npm run start:debug  # TODO: dockernize
 ```
 
 ### kafka
