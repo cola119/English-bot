@@ -23,3 +23,11 @@ $KAFKA_HOME/bin/kafka-topics.sh --create --topic get.message.event --partitions 
 ```sh
 ngrok http -host-header="0.0.0.0:3001" 3001
 ```
+
+### nginx
+
+```sh
+ssh sakura.com
+cd etc/nginx/conf.d/sites-available/
+vim english-bot.koheiueno.dev.conf
+```
