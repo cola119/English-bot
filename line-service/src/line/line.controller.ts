@@ -14,6 +14,6 @@ export class LineController {
   getMessage(@Payload() message: KafkaMessage): void {
     console.log(message.value);
     const lineEvent = (message.value as any) as line.MessageEvent;
-    this.lineService.echoMessage(lineEvent);
+    this.lineService.translation(lineEvent);
   }
 }
