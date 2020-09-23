@@ -1,9 +1,9 @@
-import { Injectable } from '@nestjs/common';
-import * as line from '@line/bot-sdk';
+import { Inject, Injectable } from '@nestjs/common';
 import { Translate } from '@google-cloud/translate/build/src/v2';
+import { Client, MessageEvent, MessageAPIResponseBase } from '@line/bot-sdk';
+import { DI_TOKENS } from 'src/constants';
 
 // TODO
-// inject
 // async await blocking
 
 const TranslationMap = {
@@ -12,21 +12,12 @@ const TranslationMap = {
 } as const;
 @Injectable()
 export class LineService {
-  client: line.Client;
-  transrator: Translate;
+  constructor(
+    @Inject(DI_TOKENS.LINE_CLIENT) private client: Client,
+    @Inject(DI_TOKENS.GC_TRANSLATE) private translator: Translate,
+  ) {}
 
-  constructor() {
-    const config = {
-      channelAccessToken: process.env.LINE_BOT_ACCESS_TOKEN,
-      channelSecret: process.env.LINE_BOT_SECRET,
-    };
-    this.client = new line.Client(config);
-    this.transrator = new Translate({
-      key: process.env.GCP_TRANSLATE_KEY,
-    });
-  }
-
-  echoMessage(event: line.MessageEvent): Promise<line.MessageAPIResponseBase> {
+  echoMessage(event: MessageEvent): Promise<MessageAPIResponseBase> {
     if (event.type !== 'message' || event.message.type !== 'text') {
       return Promise.reject('Not message event');
     }
@@ -34,16 +25,14 @@ export class LineService {
     return this.client.replyMessage(event.replyToken, echo);
   }
 
-  async translation(
-    event: line.MessageEvent,
-  ): Promise<line.MessageAPIResponseBase> {
+  async translation(event: MessageEvent): Promise<MessageAPIResponseBase> {
     if (event.type !== 'message' || event.message.type !== 'text') {
       return Promise.reject('Not message event');
     }
     const text = event.message.text;
-    const [lang] = await this.transrator.detect(text);
+    const [lang] = await this.translator.detect(text);
     console.log(lang);
-    const translations = await this.transrator.translate(text, {
+    const translations = await this.translator.translate(text, {
       to: TranslationMap[lang.language] ?? 'en',
     });
     console.log(translations);
