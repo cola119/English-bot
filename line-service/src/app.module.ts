@@ -7,6 +7,7 @@ import { ConfigModule } from '@nestjs/config';
 import { Client } from '@line/bot-sdk';
 import { Translate } from '@google-cloud/translate/build/src/v2';
 import { DI_TOKENS } from './constants';
+import { Dictionary } from 'oxford-dictionary-nodejs';
 
 @Module({
   imports: [
@@ -28,6 +29,13 @@ import { DI_TOKENS } from './constants';
     {
       provide: DI_TOKENS.GC_TRANSLATE,
       useValue: new Translate({ key: process.env.GCP_TRANSLATE_KEY }),
+    },
+    {
+      provide: DI_TOKENS.OX_DICTIONARY,
+      useValue: new Dictionary({
+        appId: process.env.OX_APP_ID,
+        appKey: process.env.OX_APP_KEY,
+      }),
     },
   ],
 })

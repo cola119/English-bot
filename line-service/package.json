@@ -29,6 +29,7 @@
     "@nestjs/microservices": "^7.4.4",
     "@nestjs/platform-express": "^7.0.0",
     "kafkajs": "^1.12.0",
+    "oxford-dictionary-nodejs": "0.0.6",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^6.5.4"

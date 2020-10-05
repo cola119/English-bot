@@ -1,4 +1,5 @@
 export const DI_TOKENS = {
   LINE_CLIENT: 'LINE_CLIENT',
   GC_TRANSLATE: 'GC_TRANSLATE',
+  OX_DICTIONARY: 'OX_DICTIONARY',
 } as const;

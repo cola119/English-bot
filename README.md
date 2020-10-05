@@ -30,4 +30,13 @@ ngrok http -host-header="0.0.0.0:3001" 3001
 ssh sakura.com
 cd etc/nginx/conf.d/sites-available/
 vim english-bot.koheiueno.dev.conf
+
+# kafka-docker
+docker-compose up -d --build
+docker-compose scale kafka=2
+./start-kafka-shell.sh 160.16.68.237 160.16.68.237:[zookeeper port]
+
+# brokers
+bash-4.4# broker-list.sh
+# 160.16.68.237:32770,160.16.68.237:32768
 ```
