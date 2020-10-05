@@ -22,7 +22,7 @@ import { Dictionary } from 'oxford-dictionary-nodejs';
     {
       provide: DI_TOKENS.LINE_CLIENT,
       useValue: new Client({
-        channelAccessToken: process.env.LINE_BOT_ACCESS_TOKEN,
+        channelAccessToken: process.env.LINE_BOT_ACCESS_TOKEN!,
         channelSecret: process.env.LINE_BOT_SECRET,
       }),
     },
@@ -33,8 +33,8 @@ import { Dictionary } from 'oxford-dictionary-nodejs';
     {
       provide: DI_TOKENS.OX_DICTIONARY,
       useValue: new Dictionary({
-        appId: process.env.OX_APP_ID,
-        appKey: process.env.OX_APP_KEY,
+        appId: process.env.OX_APP_ID!,
+        appKey: process.env.OX_APP_KEY!,
       }),
     },
   ],
