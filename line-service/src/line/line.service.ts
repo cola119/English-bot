@@ -11,6 +11,7 @@ import {
 } from '@line/bot-sdk';
 import { DI_TOKENS } from 'src/constants';
 import { Dictionary } from 'oxford-dictionary-nodejs';
+import * as https from 'https';
 
 type BotDictionary = {
   definitions: string[];
@@ -88,10 +89,27 @@ export class LineService {
 
       console.log(botDict);
 
+      const data = await new Promise<{ items: any[] }>(resolve => {
+        https.get(
+          encodeURI(
+            `https://www.googleapis.com/customsearch/v1?key=${process.env.GCP_SEARCH_KEY}&cx=6a8855403366a5d7b&searchType=image&q=${text}`,
+          ),
+          async res => {
+            let body = '';
+            for await (const data of res) {
+              body += data;
+            }
+            resolve(JSON.parse(body));
+          },
+        );
+      });
+      const imageItem = data.items[0];
+      console.log(imageItem);
+
       const flexMessage: FlexMessage = {
         type: 'flex',
         altText: text,
-        contents: wordFlexContent(text, botDict),
+        contents: wordFlexContent(text, botDict, imageItem),
       };
 
       return this.client.replyMessage(event.replyToken, flexMessage);
@@ -155,10 +173,14 @@ const mergeBotDictionary = (
   };
 };
 
-const wordFlexContent = (word: string, dict: BotDictionary): FlexContainer => {
+const wordFlexContent = (
+  word: string,
+  dict: BotDictionary,
+  image: any,
+): FlexContainer => {
   const hero: FlexComponent = {
     type: 'image',
-    url: 'https://scdn.line-apps.com/n/channel_devcenter/img/fx/01_3_movie.png',
+    url: image.link,
     size: 'full',
     aspectRatio: '20:13',
     aspectMode: 'cover',
