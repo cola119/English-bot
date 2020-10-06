@@ -16,11 +16,15 @@ type BotDictionary = {
   definitions: string[];
   synonyms: string[];
   examples: string[];
+  phoneticSpellings: string[];
+  audioFiles: string[];
 };
 const initialDictionary: BotDictionary = {
   definitions: [],
   synonyms: [],
   examples: [],
+  phoneticSpellings: [],
+  audioFiles: [],
 };
 // TODO
 // async await blocking
@@ -52,7 +56,9 @@ export class LineService {
       const botDict = result.lexicalEntries.reduce((acc, lexicalEntry) => {
         const dict = lexicalEntry.entries?.reduce<BotDictionary>(
           (acc, entry) => {
-            const dict = entry.senses?.reduce<BotDictionary>((acc, sense) => {
+            const partialDict = entry.senses?.reduce<
+              Omit<BotDictionary, 'phoneticSpellings' | 'audioFiles'>
+            >((acc, sense) => {
               const definition = sense.definitions ?? [];
               const synonym = sense.synonyms?.map(s => s.text) ?? [];
               const example = sense.examples?.map(e => e.text) ?? [];
@@ -62,6 +68,17 @@ export class LineService {
                 examples: [...acc.examples, ...example],
               };
             }, initialDictionary);
+            const phoneticSpellings =
+              entry.pronunciations
+                ?.map(p => p.phoneticSpelling)
+                .filter((p): p is string => !!p) ?? [];
+            const audioFiles =
+              entry.pronunciations
+                ?.map(p => p.audioFile)
+                .filter((p): p is string => !!p) ?? [];
+            const dict = partialDict
+              ? { ...partialDict, phoneticSpellings, audioFiles }
+              : undefined;
             return mergeBotDictionary(acc, dict);
           },
           initialDictionary,
@@ -70,9 +87,10 @@ export class LineService {
       }, initialDictionary);
 
       console.log(botDict);
+
       const flexMessage: FlexMessage = {
         type: 'flex',
-        altText: 'hoge',
+        altText: text,
         contents: wordFlexContent(text, botDict),
       };
 
@@ -112,8 +130,13 @@ export class LineService {
   }
 }
 
-const reduceString = (separator: string) => (arr?: string[]): string =>
-  arr?.reduce((p, c) => (p === '' ? c : `${p}${separator}${c}`), '') ?? '';
+const reduceString = (separator: string) => (
+  arr?: (string | undefined)[],
+): string =>
+  arr?.reduce(
+    (p, c) => (c ? (p === '' ? c : `${p}${separator}${c}`) : p),
+    '',
+  ) ?? '';
 const withLine = reduceString('\n');
 const withComma = reduceString(', ');
 const bulletFormat = (args?: string[]): string =>
@@ -127,6 +150,8 @@ const mergeBotDictionary = (
     definitions: [...a.definitions, ...b.definitions],
     synonyms: [...a.synonyms, ...b.synonyms],
     examples: [...a.examples, ...b.examples],
+    phoneticSpellings: [...a.phoneticSpellings, ...b.phoneticSpellings],
+    audioFiles: [...a.audioFiles, ...b.audioFiles],
   };
 };
 
@@ -151,8 +176,13 @@ const wordFlexContent = (word: string, dict: BotDictionary): FlexContainer => {
       },
       {
         type: 'text',
-        text: 'ˈTHēədər',
+        text: withComma(dict.phoneticSpellings) || word,
         size: 'xs',
+        action: {
+          type: 'uri',
+          label: 'listen',
+          uri: dict.audioFiles[0],
+        },
       },
     ],
   };
@@ -181,7 +211,7 @@ const wordFlexContent = (word: string, dict: BotDictionary): FlexContainer => {
               wrap: true,
               size: 'sm',
               color: '#808080',
-              text: withComma(dict.synonyms),
+              text: withComma(dict.synonyms.slice(0, 10)),
             },
           ],
         }
@@ -245,9 +275,9 @@ const wordFlexContent = (word: string, dict: BotDictionary): FlexContainer => {
       contents: [
         titleBox,
         defsBox,
-        separator,
+        defsBox ? separator : null,
         synonymsBox,
-        separator,
+        synonymsBox ? separator : null,
         examplesBox,
       ].filter((box): box is FlexBox | FlexSeparator => !!box),
     },
