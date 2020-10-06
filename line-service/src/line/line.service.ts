@@ -103,13 +103,13 @@ export class LineService {
           },
         );
       });
-      const imageItem = data.items[0];
-      console.log(imageItem);
+      const images = data.items.slice(0, 3);
+      console.log(images);
 
       const flexMessage: FlexMessage = {
         type: 'flex',
         altText: text,
-        contents: wordFlexContent(text, botDict, imageItem),
+        contents: wordFlexContent(text, botDict, images),
       };
 
       return this.client.replyMessage(event.replyToken, flexMessage);
@@ -176,14 +176,60 @@ const mergeBotDictionary = (
 const wordFlexContent = (
   word: string,
   dict: BotDictionary,
-  image: any,
+  images: any,
 ): FlexContainer => {
   const hero: FlexComponent = {
-    type: 'image',
-    url: image.link,
-    size: 'full',
-    aspectRatio: '20:13',
-    aspectMode: 'cover',
+    type: 'box',
+    layout: 'horizontal',
+    contents: [
+      {
+        type: 'image',
+        url: images[0].link,
+        size: '5xl',
+        aspectMode: 'cover',
+        aspectRatio: '150:196',
+        gravity: 'center',
+        flex: 1,
+        action: {
+          type: 'uri',
+          uri: images[0].link,
+          label: 'image 1',
+        },
+      },
+      {
+        type: 'box',
+        layout: 'vertical',
+        contents: [
+          {
+            type: 'image',
+            url: images[1].link,
+            size: 'full',
+            aspectMode: 'cover',
+            aspectRatio: '150:98',
+            gravity: 'center',
+            action: {
+              type: 'uri',
+              uri: images[1].link,
+              label: 'image 2',
+            },
+          },
+          {
+            type: 'image',
+            url: images[2].link,
+            size: 'full',
+            aspectMode: 'cover',
+            aspectRatio: '150:98',
+            gravity: 'center',
+            action: {
+              type: 'uri',
+              uri: images[2].link,
+              label: 'image 3',
+            },
+          },
+        ],
+        flex: 1,
+      },
+    ],
   };
   const titleBox: FlexComponent = {
     type: 'box',
