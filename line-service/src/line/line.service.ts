@@ -242,17 +242,19 @@ const wordFlexContent = (
         weight: 'bold',
         size: 'xxl',
       },
-      {
-        type: 'text',
-        text: withComma(dict.phoneticSpellings) || word,
-        size: 'xs',
-        action: {
-          type: 'uri',
-          label: 'listen',
-          uri: dict.audioFiles[0],
-        },
-      },
-    ],
+      dict.audioFiles.length > 0
+        ? {
+            type: 'text',
+            text: withComma(dict.phoneticSpellings) || word,
+            size: 'xs',
+            action: {
+              type: 'uri',
+              label: 'listen',
+              uri: dict.audioFiles[0],
+            },
+          }
+        : null,
+    ].filter((d): d is any => !!d), // FIXME
   };
   const defsBox: FlexComponent | null =
     dict.definitions.length > 0
